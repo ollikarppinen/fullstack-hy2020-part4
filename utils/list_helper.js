@@ -19,13 +19,17 @@ const favouriteBlog = (blogs) =>
 // FIXME: Blogs with author value undefined/"undefined" and null/"null" handled if they would have same author
 const mostBlogs = (blogs) => {
   const blogsByAuthor = _.groupBy(blogs, ({ author }) => author)
-  return Object.keys(blogsByAuthor).reduce(
-    (authorWithMostBlogs, author) =>
-      authorWithMostBlogs &&
-      blogsByAuthor[authorWithMostBlogs].length >= blogsByAuthor[author].length
-        ? authorWithMostBlogs
-        : author,
-    undefined
+  return _.maxBy(
+    Object.keys(blogsByAuthor),
+    (author) => blogsByAuthor[author].length
+  )
+}
+
+// FIXME: Blogs with author value undefined/"undefined" and null/"null" handled if they would have same author
+const mostLikes = (blogs) => {
+  const blogsByAuthor = _.groupBy(blogs, ({ author }) => author)
+  return _.maxBy(Object.keys(blogsByAuthor), (author) =>
+    totalLikes(blogsByAuthor[author])
   )
 }
 
@@ -34,4 +38,5 @@ module.exports = {
   totalLikes,
   favouriteBlog,
   mostBlogs,
+  mostLikes,
 }

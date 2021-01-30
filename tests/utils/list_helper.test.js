@@ -3,6 +3,7 @@ const {
   totalLikes,
   favouriteBlog,
   mostBlogs,
+  mostLikes,
 } = require("../../utils/list_helper")
 
 describe("totalLikes", () => {
@@ -90,8 +91,6 @@ describe("mostBlogs", () => {
   })
 
   describe("with multiple blogs", () => {
-    const blog = { likes: 1 }
-
     describe("with one author having most blogs", () => {
       const blogs = [
         { author: "authorWithMostBlogs" },
@@ -109,8 +108,59 @@ describe("mostBlogs", () => {
         { author: "secondAuthorWithTiedMostBlogs" },
       ]
 
-      test("returns undefined", () =>
+      test("returns first author with most blogs", () =>
         expect(mostBlogs(blogs)).toBe("authorWithTiedMostBlogs"))
+    })
+  })
+})
+
+describe("mostLikes", () => {
+  describe("without blogs", () => {
+    const blogs = []
+    test("returns undefined", () => expect(mostLikes(blogs)).toBe(undefined))
+  })
+
+  describe("with blog", () => {
+    describe("without author", () => {
+      const blogs = [{ title: "foo" }]
+      test("returns undefined", () =>
+        expect(mostLikes(blogs)).toBe("undefined"))
+    })
+
+    describe("with author", () => {
+      describe("with likes", () => {
+        const blogs = [{ author: "foo" }]
+        test("returns author", () => expect(mostLikes(blogs)).toBe("foo"))
+      })
+
+      describe("without likes", () => {
+        const blogs = [{ author: "foo", likes: 1 }]
+        test("returns author", () => expect(mostLikes(blogs)).toBe("foo"))
+      })
+    })
+  })
+
+  describe("with multiple blogs", () => {
+    describe("with one author having most likes", () => {
+      const blogs = [
+        { author: "authorWithMostLikes", likes: 2 },
+        { author: "authorWithLeastLikes", likes: 3 },
+        { author: "authorWithMostLikes", likes: 2 },
+      ]
+
+      test("returns the author with most likes", () =>
+        expect(mostLikes(blogs)).toBe("authorWithMostLikes"))
+    })
+
+    describe("with multiple author having most likes", () => {
+      const blogs = [
+        { author: "authorWithLestLikes", likes: 1 },
+        { author: "firstAuthorWithTiedMostLikes", likes: 2 },
+        { author: "secondAuthorWithTiedMostLikes", likes: 2 },
+      ]
+
+      test("returns first author with most likes", () =>
+        expect(mostLikes(blogs)).toBe("firstAuthorWithTiedMostLikes"))
     })
   })
 })
