@@ -1,4 +1,9 @@
-const { dummy, totalLikes, favouriteBlog } = require("../../utils/list_helper")
+const {
+  dummy,
+  totalLikes,
+  favouriteBlog,
+  mostBlogs,
+} = require("../../utils/list_helper")
 
 describe("totalLikes", () => {
   describe("without blogs", () => {
@@ -61,6 +66,51 @@ describe("favouriteBlog", () => {
         expect(favouriteBlog([blogWithTiedMostLikes, blog])).toEqual(
           blogWithTiedMostLikes
         ))
+    })
+  })
+})
+
+describe("mostBlogs", () => {
+  describe("without blogs", () => {
+    const blogs = []
+    test("returns undefined", () => expect(mostBlogs(blogs)).toBe(undefined))
+  })
+
+  describe("with blog", () => {
+    describe("without author", () => {
+      const blogs = [{ title: "foo" }]
+      test("returns undefined", () =>
+        expect(mostBlogs(blogs)).toBe("undefined"))
+    })
+
+    describe("with author", () => {
+      const blogs = [{ author: "foo" }]
+      test("returns author", () => expect(mostBlogs(blogs)).toBe("foo"))
+    })
+  })
+
+  describe("with multiple blogs", () => {
+    const blog = { likes: 1 }
+
+    describe("with one author having most blogs", () => {
+      const blogs = [
+        { author: "authorWithMostBlogs" },
+        { author: "authorWithLeastBlogs" },
+        { author: "authorWithMostBlogs" },
+      ]
+
+      test("returns the author with most blogs", () =>
+        expect(mostBlogs(blogs)).toBe("authorWithMostBlogs"))
+    })
+
+    describe("with multiple author having most blogs", () => {
+      const blogs = [
+        { author: "authorWithTiedMostBlogs" },
+        { author: "secondAuthorWithTiedMostBlogs" },
+      ]
+
+      test("returns undefined", () =>
+        expect(mostBlogs(blogs)).toBe("authorWithTiedMostBlogs"))
     })
   })
 })
