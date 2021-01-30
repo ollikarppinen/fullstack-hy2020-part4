@@ -74,19 +74,29 @@ describe("favouriteBlog", () => {
 describe("mostBlogs", () => {
   describe("without blogs", () => {
     const blogs = []
-    test("returns undefined", () => expect(mostBlogs(blogs)).toBe(undefined))
+    test("returns undefined", () =>
+      expect(mostBlogs(blogs)).toEqual({
+        author: undefined,
+        blogs: 0,
+      }))
   })
 
   describe("with blog", () => {
     describe("without author", () => {
       const blogs = [{ title: "foo" }]
       test("returns undefined", () =>
-        expect(mostBlogs(blogs)).toBe("undefined"))
+        expect(mostBlogs(blogs)).toEqual({
+          author: "undefined",
+          blogs: 1,
+        }))
     })
 
     describe("with author", () => {
       const blogs = [{ author: "foo" }]
-      test("returns author", () => expect(mostBlogs(blogs)).toBe("foo"))
+      expect(mostBlogs(blogs)).toEqual({
+        author: "foo",
+        blogs: 1,
+      })
     })
   })
 
@@ -99,7 +109,10 @@ describe("mostBlogs", () => {
       ]
 
       test("returns the author with most blogs", () =>
-        expect(mostBlogs(blogs)).toBe("authorWithMostBlogs"))
+        expect(mostBlogs(blogs)).toEqual({
+          author: "authorWithMostBlogs",
+          blogs: 2,
+        }))
     })
 
     describe("with multiple author having most blogs", () => {
@@ -109,7 +122,10 @@ describe("mostBlogs", () => {
       ]
 
       test("returns first author with most blogs", () =>
-        expect(mostBlogs(blogs)).toBe("authorWithTiedMostBlogs"))
+        expect(mostBlogs(blogs)).toEqual({
+          author: "authorWithTiedMostBlogs",
+          blogs: 1,
+        }))
     })
   })
 })
@@ -117,25 +133,28 @@ describe("mostBlogs", () => {
 describe("mostLikes", () => {
   describe("without blogs", () => {
     const blogs = []
-    test("returns undefined", () => expect(mostLikes(blogs)).toBe(undefined))
+    test("returns undefined", () =>
+      expect(mostLikes(blogs)).toEqual({ author: undefined, likes: 0 }))
   })
 
   describe("with blog", () => {
     describe("without author", () => {
       const blogs = [{ title: "foo" }]
       test("returns undefined", () =>
-        expect(mostLikes(blogs)).toBe("undefined"))
+        expect(mostLikes(blogs)).toEqual({ author: "undefined", likes: 0 }))
     })
 
     describe("with author", () => {
       describe("with likes", () => {
         const blogs = [{ author: "foo" }]
-        test("returns author", () => expect(mostLikes(blogs)).toBe("foo"))
+        test("returns author", () =>
+          expect(mostLikes(blogs)).toEqual({ author: "foo", likes: 0 }))
       })
 
       describe("without likes", () => {
         const blogs = [{ author: "foo", likes: 1 }]
-        test("returns author", () => expect(mostLikes(blogs)).toBe("foo"))
+        test("returns author", () =>
+          expect(mostLikes(blogs)).toEqual({ author: "foo", likes: 1 }))
       })
     })
   })
@@ -149,7 +168,10 @@ describe("mostLikes", () => {
       ]
 
       test("returns the author with most likes", () =>
-        expect(mostLikes(blogs)).toBe("authorWithMostLikes"))
+        expect(mostLikes(blogs)).toEqual({
+          author: "authorWithMostLikes",
+          likes: 4,
+        }))
     })
 
     describe("with multiple author having most likes", () => {
@@ -160,7 +182,10 @@ describe("mostLikes", () => {
       ]
 
       test("returns first author with most likes", () =>
-        expect(mostLikes(blogs)).toBe("firstAuthorWithTiedMostLikes"))
+        expect(mostLikes(blogs)).toEqual({
+          author: "firstAuthorWithTiedMostLikes",
+          likes: 2,
+        }))
     })
   })
 })
