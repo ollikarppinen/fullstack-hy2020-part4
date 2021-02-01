@@ -102,6 +102,40 @@ describe("create", () => {
         expect(response.body).toMatchObject({ ...newBlog, likes: 0 })
       })
     })
+
+    describe("without title parameter", () => {
+      const newBlog = {
+        author: "newAuthor",
+        url: "newUrl",
+        likes: "123456",
+      }
+      test("responds with 400", async () => {
+        await api.post("/api/blogs").send(newBlog).expect(400)
+      })
+
+      test("blog is not persisted", async () => {
+        await api.post("/api/blogs").send(newBlog)
+        const blogs = await Blog.find(newBlog)
+        expect(blogs).toHaveLength(0)
+      })
+    })
+
+    describe("without author parameter", () => {
+      const newBlog = {
+        title: "newBlog",
+        url: "newUrl",
+        likes: "123456",
+      }
+      test("responds with 400", async () => {
+        await api.post("/api/blogs").send(newBlog).expect(400)
+      })
+
+      test("blog is not persisted", async () => {
+        await api.post("/api/blogs").send(newBlog)
+        const blogs = await Blog.find(newBlog)
+        expect(blogs).toHaveLength(0)
+      })
+    })
   })
 })
 
