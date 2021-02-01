@@ -155,6 +155,31 @@ describe("delete", () => {
   })
 })
 
+describe("put", () => {
+  describe("with 2 blogs", () => {
+    describe("with updating likes", () => {
+      const updatePayload = { likes: 111 }
+
+      test("responds with 200", async () => {
+        const blogs = await Blog.find({})
+        await api
+          .put(`/api/blogs/${blogs[0].id}`)
+          .send(updatePayload)
+          .expect(200)
+      })
+
+      test("likes is updated in db", async () => {
+        const blogs = await Blog.find({ likes: 123 })
+        const id = blogs[0].id
+        expect(blogs[0].likes).toBe(123)
+        await api.put(`/api/blogs/${id}`).send(updatePayload)
+        const updatedBlogs = await Blog.find({ _id: id })
+        expect(updatedBlogs[0].likes).toBe(111)
+      })
+    })
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
