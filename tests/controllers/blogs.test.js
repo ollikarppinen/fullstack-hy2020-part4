@@ -139,6 +139,22 @@ describe("create", () => {
   })
 })
 
+describe("delete", () => {
+  describe("with 2 blogs", () => {
+    test("responds with 204", async () => {
+      const blogs = await Blog.find({})
+      await api.delete(`/api/blogs/${blogs[0].id}`).expect(204)
+    })
+
+    test("deletes the blog from db", async () => {
+      const blogs = await Blog.find({})
+      expect(blogs).toHaveLength(2)
+      await api.delete(`/api/blogs/${blogs[0].id}`)
+      expect(await Blog.find({})).toHaveLength(1)
+    })
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
