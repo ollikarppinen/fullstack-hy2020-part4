@@ -40,6 +40,11 @@ describe("index", () => {
 
       expect(response.body).toHaveLength(2)
     })
+
+    test("id is defined", async () => {
+      const response = await api.get("/api/blogs")
+      expect(response.body[0].id).toBeDefined()
+    })
   })
 })
 
