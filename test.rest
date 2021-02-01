@@ -7,6 +7,6 @@ content-type: application/json
     "title": "blii",
     "author": "bluu",
     "url": "blaa",
-    "likes": "blööö"
+    "likes": "123"
 }
 ###
