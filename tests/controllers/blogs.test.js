@@ -20,15 +20,15 @@ const initialBlogs = [
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  initialBlogs.forEach(async (blog) => {
-    let blogObject = new Blog(blog)
-    await blogObject.save()
-  })
+  let blogObject = new Blog(initialBlogs[0])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[1])
+  await blogObject.save()
 })
 
 describe("index", () => {
-  describe("without 2 blogs", () => {
-    test("return json", async () => {
+  describe("with 2 blogs", () => {
+    test("returns json", async () => {
       await api
         .get("/api/blogs")
         .expect(200)
@@ -44,6 +44,35 @@ describe("index", () => {
     test("id is defined", async () => {
       const response = await api.get("/api/blogs")
       expect(response.body[0].id).toBeDefined()
+    })
+  })
+})
+
+describe("create", () => {
+  const newBlog = {
+    title: "newBlog",
+    author: "newAuthor",
+    url: "newUrl",
+    likes: "123456",
+  }
+  describe("with 2 blogs", () => {
+    test("returns json", async () => {
+      await api
+        .post("/api/blogs")
+        .send(newBlog)
+        .expect(201)
+        .expect("Content-Type", /application\/json/)
+    })
+
+    test("persists blog in db", async () => {
+      await api.post("/api/blogs").send(newBlog)
+      const blogs = await Blog.find(newBlog)
+      expect(blogs).toHaveLength(1)
+    })
+
+    test("responds with correct body", async () => {
+      const response = await api.post("/api/blogs").send(newBlog)
+      expect(response.body).toMatchObject({ ...newBlog, likes: 123456 })
     })
   })
 })
