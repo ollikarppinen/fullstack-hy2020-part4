@@ -26,6 +26,10 @@ POST http://localhost:3003/api/login HTTP/1.1
 content-type: application/json
 
 {
-    "username": "root3",
+    "username": "root1",
     "password": "salainen"
 }
+###
+DELETE http://localhost:3003/api/blogs/601b046610e770479510d98d HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QxIiwiaWQiOiI2MDFiMDAzNWNmOGI5YzM4MzZlMDhkOTgiLCJpYXQiOjE2MTIzODQ3NDd9.-mC-Lb8q-KcQXWxAYJTSNaa3IdSnj6iOn0HKFvWxpkw
