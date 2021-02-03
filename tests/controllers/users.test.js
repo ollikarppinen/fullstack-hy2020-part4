@@ -2,26 +2,17 @@ const mongoose = require("mongoose")
 const supertest = require("supertest")
 const app = require("../../app")
 const api = supertest(app)
-const bcrypt = require("bcrypt")
-const User = require("../../models/user")
 
-const usersInDb = async () => {
-  const users = await User.find({})
-  return users.map((u) => u.toJSON())
-}
+const helpers = require("../helpers")
 
 describe("when there is initially one user in db", () => {
   beforeEach(async () => {
-    await User.deleteMany({})
-
-    const passwordHash = await bcrypt.hash("sekret", 10)
-    const user = new User({ username: "root", passwordHash })
-
-    await user.save()
+    await helpers.deleteUsers()
+    await helpers.createUser({ password: "sekret", username: "root" })
   })
 
   test("creation succeeds with a fresh username", async () => {
-    const usersAtStart = await usersInDb()
+    const usersAtStart = await helpers.usersInDb()
 
     const newUser = {
       username: "mluukkai",
@@ -35,7 +26,7 @@ describe("when there is initially one user in db", () => {
       .expect(200)
       .expect("Content-Type", /application\/json/)
 
-    const usersAtEnd = await usersInDb()
+    const usersAtEnd = await helpers.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
 
     const usernames = usersAtEnd.map((u) => u.username)
@@ -43,7 +34,7 @@ describe("when there is initially one user in db", () => {
   })
 
   test("creation fails with proper statuscode and message if username already taken", async () => {
-    const usersAtStart = await usersInDb()
+    const usersAtStart = await helpers.usersInDb()
 
     const newUser = {
       username: "root",
@@ -59,12 +50,12 @@ describe("when there is initially one user in db", () => {
 
     expect(result.body.error).toContain("`username` to be unique")
 
-    const usersAtEnd = await usersInDb()
+    const usersAtEnd = await helpers.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
   })
 
   test("creation fails with proper statuscode and message if username length is less than 3 characters", async () => {
-    const usersAtStart = await usersInDb()
+    const usersAtStart = await helpers.usersInDb()
 
     const newUser = {
       username: "ro",
@@ -82,12 +73,12 @@ describe("when there is initially one user in db", () => {
       "User validation failed: username: Path `username` (`ro`) is shorter than the minimum allowed length (3)."
     )
 
-    const usersAtEnd = await usersInDb()
+    const usersAtEnd = await helpers.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
   })
 
   test("creation fails with proper statuscode and message if password length is less than 3 characters", async () => {
-    const usersAtStart = await usersInDb()
+    const usersAtStart = await helpers.usersInDb()
 
     const newUser = {
       username: "mluukkai",
@@ -105,7 +96,7 @@ describe("when there is initially one user in db", () => {
       "password must be at least 3 characters long"
     )
 
-    const usersAtEnd = await usersInDb()
+    const usersAtEnd = await helpers.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
   })
 })

@@ -3,6 +3,7 @@ const supertest = require("supertest")
 const app = require("../../app")
 const api = supertest(app)
 const Blog = require("../../models/blog")
+const helpers = require("../helpers")
 const initialBlogs = [
   {
     title: "blii",
@@ -18,12 +19,30 @@ const initialBlogs = [
   },
 ]
 
+let token = null
+let user = null
+
 beforeEach(async () => {
+  await helpers.deleteUsers()
+  const userPayload = { username: "foo", password: "bar" }
+  const createdUserResponse = await helpers.createUser(userPayload)
+  user = createdUserResponse.body
+  token = await helpers.loginUser(userPayload)
   await Blog.deleteMany({})
-  let blogObject = new Blog(initialBlogs[0])
+  let blogObject = new Blog({
+    user: user.id,
+    ...initialBlogs[0],
+  })
   await blogObject.save()
-  blogObject = new Blog(initialBlogs[1])
+  blogObject = new Blog({
+    user: user.id,
+    ...initialBlogs[1],
+  })
   await blogObject.save()
+})
+
+test("token should be defined", () => {
+  expect(token).toBeDefined()
 })
 
 describe("index", () => {
@@ -60,19 +79,26 @@ describe("create", () => {
       test("returns json", async () => {
         await api
           .post("/api/blogs")
+          .auth(token, { type: "bearer" })
           .send(newBlog)
           .expect(201)
           .expect("Content-Type", /application\/json/)
       })
 
       test("persists blog in db", async () => {
-        await api.post("/api/blogs").send(newBlog)
+        await api
+          .post("/api/blogs")
+          .auth(token, { type: "bearer" })
+          .send(newBlog)
         const blogs = await Blog.find(newBlog)
         expect(blogs).toHaveLength(1)
       })
 
       test("responds with correct body", async () => {
-        const response = await api.post("/api/blogs").send(newBlog)
+        const response = await api
+          .post("/api/blogs")
+          .auth(token, { type: "bearer" })
+          .send(newBlog)
         expect(response.body).toMatchObject({ ...newBlog, likes: 123456 })
       })
     })
@@ -86,20 +112,38 @@ describe("create", () => {
       test("returns json", async () => {
         await api
           .post("/api/blogs")
+          .auth(token, { type: "bearer" })
           .send(newBlog)
           .expect(201)
           .expect("Content-Type", /application\/json/)
       })
 
       test("persists blog in db", async () => {
-        await api.post("/api/blogs").send(newBlog)
+        await api
+          .post("/api/blogs")
+          .auth(token, { type: "bearer" })
+          .send(newBlog)
         const blogs = await Blog.find(newBlog)
         expect(blogs).toHaveLength(1)
       })
 
       test("responds with correct body with 0 likes", async () => {
-        const response = await api.post("/api/blogs").send(newBlog)
+        const response = await api
+          .post("/api/blogs")
+          .auth(token, { type: "bearer" })
+          .send(newBlog)
         expect(response.body).toMatchObject({ ...newBlog, likes: 0 })
+      })
+    })
+
+    describe("without authentication", async () => {
+      const newBlog = {
+        title: "newBlog",
+        author: "newAuthor",
+        url: "newUrl",
+      }
+      test("responds with 401", async () => {
+        await api.post("/api/blogs").send(newBlog).expect(401)
       })
     })
 
@@ -110,11 +154,18 @@ describe("create", () => {
         likes: "123456",
       }
       test("responds with 400", async () => {
-        await api.post("/api/blogs").send(newBlog).expect(400)
+        await api
+          .post("/api/blogs")
+          .auth(token, { type: "bearer" })
+          .send(newBlog)
+          .expect(400)
       })
 
       test("blog is not persisted", async () => {
-        await api.post("/api/blogs").send(newBlog)
+        await api
+          .post("/api/blogs")
+          .auth(token, { type: "bearer" })
+          .send(newBlog)
         const blogs = await Blog.find(newBlog)
         expect(blogs).toHaveLength(0)
       })
@@ -127,11 +178,18 @@ describe("create", () => {
         likes: "123456",
       }
       test("responds with 400", async () => {
-        await api.post("/api/blogs").send(newBlog).expect(400)
+        await api
+          .post("/api/blogs")
+          .auth(token, { type: "bearer" })
+          .send(newBlog)
+          .expect(400)
       })
 
       test("blog is not persisted", async () => {
-        await api.post("/api/blogs").send(newBlog)
+        await api
+          .post("/api/blogs")
+          .auth(token, { type: "bearer" })
+          .send(newBlog)
         const blogs = await Blog.find(newBlog)
         expect(blogs).toHaveLength(0)
       })
@@ -141,15 +199,27 @@ describe("create", () => {
 
 describe("delete", () => {
   describe("with 2 blogs", () => {
+    describe("without authentication", async () => {
+      test("responds with 401", async () => {
+        const blogs = await Blog.find({})
+        await api.delete(`/api/blogs/${blogs[0].id}`).expect(401)
+      })
+    })
+
     test("responds with 204", async () => {
       const blogs = await Blog.find({})
-      await api.delete(`/api/blogs/${blogs[0].id}`).expect(204)
+      await api
+        .delete(`/api/blogs/${blogs[0].id}`)
+        .auth(token, { type: "bearer" })
+        .expect(204)
     })
 
     test("deletes the blog from db", async () => {
       const blogs = await Blog.find({})
       expect(blogs).toHaveLength(2)
-      await api.delete(`/api/blogs/${blogs[0].id}`)
+      await api
+        .delete(`/api/blogs/${blogs[0].id}`)
+        .auth(token, { type: "bearer" })
       expect(await Blog.find({})).toHaveLength(1)
     })
   })
