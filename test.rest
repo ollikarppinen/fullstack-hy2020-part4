@@ -2,10 +2,10 @@ http://localhost:3003/api/blogs HTTP/1.1
 ###
 POST http://localhost:3003/api/blogs HTTP/1.1
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QzIiwiaWQiOiI2MDFiMDNhZWY2NTcwOTQ1OWYzODI1MGYiLCJpYXQiOjE2MTIzODMzMTF9.bcI8E4xAPNYQdBeJu6qxDXiplhOvNMxmXfHOQ9tdxpc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QzIiwiaWQiOiI2MDFiMDNhZWY2NTcwOTQ1OWYzODI1MGYiLCJpYXQiOjE2MTIzODQxNjJ9.-xKTwLk5XVY_Tzjlkg4SBCMIRHezfFPAlVTCNjoQPxA
 
 {
-    "title": "Root kolmoset blogi",
+    "title": "Root kolmoset blogi kakkonen",
     "author": "bluu",
     "url": "blaa",
     "likes": "123"
